@@ -12,7 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.BindView;
-import json.chao.com.wanandroid.base.fragment.AbstractRootFragment;
+import json.chao.com.wanandroid.base.fragment.BaseRootFragment;
 import json.chao.com.wanandroid.component.RxBus;
 import json.chao.com.wanandroid.core.bean.project.ProjectClassifyData;
 import json.chao.com.wanandroid.R;
@@ -28,7 +28,7 @@ import json.chao.com.wanandroid.utils.CommonUtils;
  * @date 2018/2/11
  */
 
-public class ProjectFragment extends AbstractRootFragment<ProjectPresenter> implements ProjectContract.View {
+public class ProjectFragment extends BaseRootFragment<ProjectPresenter> implements ProjectContract.View {
 
     @BindView(R.id.project_tab_layout)
     SlidingTabLayout mTabLayout;
@@ -74,15 +74,29 @@ public class ProjectFragment extends AbstractRootFragment<ProjectPresenter> impl
     @Override
     public void showProjectClassifyData(List<ProjectClassifyData> projectClassifyDataList) {
         if (mPresenter.getCurrentPage() == Constants.TYPE_PROJECT) {
-            mTabLayout.setVisibility(View.VISIBLE);
-            mDivider.setVisibility(View.VISIBLE);
-            mViewPager.setVisibility(View.VISIBLE);
+            setChildViewVisibility(View.VISIBLE);
         } else {
-            mTabLayout.setVisibility(View.INVISIBLE);
-            mDivider.setVisibility(View.INVISIBLE);
-            mViewPager.setVisibility(View.INVISIBLE);
+            setChildViewVisibility(View.INVISIBLE);
         }
         mData = projectClassifyDataList;
+        initViewPagerAndTabLayout();
+        showNormal();
+    }
+
+    @Override
+    public void showError() {
+        setChildViewVisibility(View.INVISIBLE);
+        super.showError();
+    }
+
+    @Override
+    public void reload() {
+        if (mPresenter != null && mTabLayout.getVisibility() == View.INVISIBLE) {
+            mPresenter.getProjectClassifyData();
+        }
+    }
+
+    private void initViewPagerAndTabLayout() {
         for (ProjectClassifyData data : mData) {
             ProjectListFragment projectListFragment = ProjectListFragment.getInstance(data.getId(), null);
             mFragments.add(projectListFragment);
@@ -121,22 +135,12 @@ public class ProjectFragment extends AbstractRootFragment<ProjectPresenter> impl
         });
         mTabLayout.setViewPager(mViewPager);
         mViewPager.setCurrentItem(Constants.TAB_ONE);
-        showNormal();
     }
 
-    @Override
-    public void showError() {
-        mTabLayout.setVisibility(View.INVISIBLE);
-        mDivider.setVisibility(View.INVISIBLE);
-        mViewPager.setVisibility(View.INVISIBLE);
-        super.showError();
-    }
-
-    @Override
-    public void reload() {
-        if (mPresenter != null && mTabLayout.getVisibility() == View.INVISIBLE) {
-            mPresenter.getProjectClassifyData();
-        }
+    private void setChildViewVisibility(int visibility) {
+        mTabLayout.setVisibility(visibility);
+        mDivider.setVisibility(visibility);
+        mViewPager.setVisibility(visibility);
     }
 
     public void jumpToTheTop() {

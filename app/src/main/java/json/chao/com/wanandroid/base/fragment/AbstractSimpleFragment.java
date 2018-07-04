@@ -10,7 +10,7 @@ import com.squareup.leakcanary.RefWatcher;
 
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
-import io.reactivex.disposables.CompositeDisposable;
+import json.chao.com.wanandroid.app.Constants;
 import json.chao.com.wanandroid.app.WanAndroidApp;
 import me.yokeyword.fragmentation.SupportFragment;
 import json.chao.com.wanandroid.R;
@@ -41,7 +41,10 @@ public abstract class AbstractSimpleFragment extends SupportFragment {
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-        unBinder.unbind();
+        if (unBinder != null && unBinder != Unbinder.EMPTY) {
+            unBinder.unbind();
+            unBinder = null;
+        }
     }
 
     @Override
@@ -70,8 +73,7 @@ public abstract class AbstractSimpleFragment extends SupportFragment {
                 return true;
             }
             long currentTime = System.currentTimeMillis();
-            long time = 2000;
-            if ((currentTime - clickTime) > time) {
+            if ((currentTime - clickTime) > Constants.DOUBLE_INTERVAL_TIME) {
                 CommonUtils.showSnackMessage(_mActivity, getString(R.string.double_click_exit_tint));
                 clickTime = System.currentTimeMillis();
             } else {

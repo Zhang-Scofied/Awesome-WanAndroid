@@ -27,6 +27,7 @@ import json.chao.com.wanandroid.utils.StatusBarUtil;
  * @author quchao
  * @date 2018/5/4
  */
+
 public class RegisterActivity extends BaseActivity<RegisterPresenter> implements RegisterContract.View {
 
     @BindView(R.id.common_toolbar)
@@ -48,8 +49,18 @@ public class RegisterActivity extends BaseActivity<RegisterPresenter> implements
     }
 
     @Override
+    protected void initToolbar() {
+        StatusBarUtil.immersive(this);
+        StatusBarUtil.setPaddingSmart(this, mToolbar);
+        mToolbar.setBackgroundColor(ContextCompat.getColor(this, R.color.register_bac));
+        mTitleTv.setText(R.string.register);
+        mTitleTv.setTextColor(ContextCompat.getColor(this, R.color.white));
+        mTitleTv.setTextSize(20);
+        mToolbar.setNavigationOnClickListener(v -> onBackPressedSupport());
+    }
+
+    @Override
     protected void initEventAndData() {
-        initToolbar();
         InputMethodManager inputMethodManager = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
         if (inputMethodManager != null) {
             mAccountEdit.requestFocus();
@@ -61,38 +72,16 @@ public class RegisterActivity extends BaseActivity<RegisterPresenter> implements
                 .subscribe(o -> register()));
     }
 
-    private void register() {
-        String account = mAccountEdit.getText().toString().trim();
-        String password = mPasswordEdit.getText().toString().trim();
-        String rePassword = mConfirmPasswordEdit.getText().toString().trim();
-
-        if (TextUtils.isEmpty(account) || TextUtils.isEmpty(password) || TextUtils.isEmpty(rePassword)) {
-            CommonUtils.showSnackMessage(this, getString(R.string.account_password_null_tint));
-            return;
-        }
-
-        if (!password.equals(rePassword)) {
-            CommonUtils.showSnackMessage(this, getString(R.string.password_not_same));
-            return;
-        }
-
-        mPresenter.getRegisterData(account, password, rePassword);
-    }
-
-    private void initToolbar() {
-        StatusBarUtil.immersive(this);
-        StatusBarUtil.setPaddingSmart(this, mToolbar);
-        mToolbar.setBackgroundColor(ContextCompat.getColor(this, R.color.register_bac));
-        mTitleTv.setText(R.string.register);
-        mTitleTv.setTextColor(ContextCompat.getColor(this, R.color.white));
-        mTitleTv.setTextSize(20);
-        mToolbar.setNavigationOnClickListener(v -> onBackPressedSupport());
-    }
-
     @Override
-    public void showRegisterData(LoginData loginData) {
+    public void showRegisterSuccess() {
         CommonUtils.showSnackMessage(this, getString(R.string.register_success));
         onBackPressedSupport();
+    }
+
+    private void register() {
+        mPresenter.getRegisterData(mAccountEdit.getText().toString().trim(),
+                mPasswordEdit.getText().toString().trim(),
+                mConfirmPasswordEdit.getText().toString().trim());
     }
 
 }

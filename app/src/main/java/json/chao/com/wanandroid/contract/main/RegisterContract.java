@@ -1,7 +1,7 @@
 package json.chao.com.wanandroid.contract.main;
 
 import json.chao.com.wanandroid.base.presenter.AbstractPresenter;
-import json.chao.com.wanandroid.base.view.BaseView;
+import json.chao.com.wanandroid.base.view.AbstractView;
 import json.chao.com.wanandroid.core.bean.main.login.LoginData;
 
 /**
@@ -10,14 +10,12 @@ import json.chao.com.wanandroid.core.bean.main.login.LoginData;
  */
 public interface RegisterContract {
 
-    interface View extends BaseView {
+    interface View extends AbstractView {
 
         /**
          * Show register data
-         *
-         * @param loginData LoginData
          */
-        void showRegisterData(LoginData loginData);
+        void showRegisterSuccess();
     }
 
     interface Presenter extends AbstractPresenter<RegisterContract.View> {

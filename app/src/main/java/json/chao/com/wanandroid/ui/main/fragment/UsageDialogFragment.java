@@ -2,6 +2,8 @@ package json.chao.com.wanandroid.ui.main.fragment;
 
 import android.app.ActivityOptions;
 import android.os.Bundle;
+import android.support.annotation.ColorRes;
+import android.support.annotation.DrawableRes;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.Toolbar;
@@ -90,15 +92,7 @@ public class UsageDialogFragment extends BaseDialogFragment<UsageDialogPresenter
                 tv.setText(name);
                 setItemBackground(tv);
                 mUsefulSitesFlowLayout.setOnTagClickListener((view, position1, parent1) -> {
-                    ActivityOptions options = ActivityOptions.makeSceneTransitionAnimation(getActivity(), view, getString(R.string.share_view));
-                    JudgeUtils.startArticleDetailActivity(getActivity(),
-                            options,
-                            mUsefulSiteDataList.get(position1).getId(),
-                            mUsefulSiteDataList.get(position1).getName().trim(),
-                            mUsefulSiteDataList.get(position1).getLink().trim(),
-                            false,
-                            false,
-                            true);
+                    startUsefulSitePager(view, position1);
                     return true;
                 });
                 return tv;
@@ -120,6 +114,18 @@ public class UsageDialogFragment extends BaseDialogFragment<UsageDialogPresenter
         mTitleTv.getViewTreeObserver().removeOnPreDrawListener(this);
         mCircularRevealAnim.show(mTitleTv, mRootView);
         return true;
+    }
+
+    private void startUsefulSitePager(View view, int position1) {
+        ActivityOptions options = ActivityOptions.makeSceneTransitionAnimation(getActivity(), view, getString(R.string.share_view));
+        JudgeUtils.startArticleDetailActivity(getActivity(),
+                options,
+                mUsefulSiteDataList.get(position1).getId(),
+                mUsefulSiteDataList.get(position1).getName().trim(),
+                mUsefulSiteDataList.get(position1).getLink().trim(),
+                false,
+                false,
+                true);
     }
 
     private void setItemBackground(TextView tv) {
@@ -148,15 +154,17 @@ public class UsageDialogFragment extends BaseDialogFragment<UsageDialogPresenter
     private void initToolbar() {
         mTitleTv.setText(R.string.useful_sites);
         if (mPresenter.getNightModeState()) {
-            mTitleTv.setTextColor(ContextCompat.getColor(getActivity(), R.color.comment_text));
-            mToolbar.setBackgroundColor(ContextCompat.getColor(getActivity(), R.color.colorCard));
-            mToolbar.setNavigationIcon(ContextCompat.getDrawable(getActivity(), R.drawable.ic_arrow_back_white_24dp));
+            setToolbarView(R.color.comment_text, R.color.colorCard, R.drawable.ic_arrow_back_white_24dp);
         } else {
-            mTitleTv.setTextColor(ContextCompat.getColor(getActivity(), R.color.title_black));
-            mToolbar.setBackgroundColor(ContextCompat.getColor(getActivity(), R.color.white));
-            mToolbar.setNavigationIcon(ContextCompat.getDrawable(getActivity(), R.drawable.ic_arrow_back_grey_24dp));
+            setToolbarView(R.color.title_black, R.color.white, R.drawable.ic_arrow_back_grey_24dp);
         }
         mToolbar.setNavigationOnClickListener(v -> mCircularRevealAnim.hide(mTitleTv, mRootView));
+    }
+
+    private void setToolbarView(@ColorRes int textColor, @ColorRes int backgroundColor, @DrawableRes int navigationIcon) {
+        mTitleTv.setTextColor(ContextCompat.getColor(getContext(), textColor));
+        mToolbar.setBackgroundColor(ContextCompat.getColor(getActivity(), backgroundColor));
+        mToolbar.setNavigationIcon(ContextCompat.getDrawable(getContext(), navigationIcon));
     }
 
 }

@@ -10,11 +10,9 @@ import javax.inject.Inject;
 import dagger.android.AndroidInjection;
 import dagger.android.AndroidInjector;
 import dagger.android.DispatchingAndroidInjector;
-import dagger.android.HasFragmentInjector;
 import dagger.android.support.HasSupportFragmentInjector;
-import json.chao.com.wanandroid.R;
 import json.chao.com.wanandroid.base.presenter.AbstractPresenter;
-import json.chao.com.wanandroid.base.view.BaseView;
+import json.chao.com.wanandroid.base.view.AbstractView;
 import json.chao.com.wanandroid.utils.CommonUtils;
 
 /**
@@ -26,7 +24,7 @@ import json.chao.com.wanandroid.utils.CommonUtils;
 
 public abstract class BaseActivity<T extends AbstractPresenter> extends AbstractSimpleActivity implements
         HasSupportFragmentInjector,
-        BaseView {
+        AbstractView {
 
     @Inject
     DispatchingAndroidInjector<Fragment> mFragmentDispatchingAndroidInjector;
@@ -40,19 +38,19 @@ public abstract class BaseActivity<T extends AbstractPresenter> extends Abstract
     }
 
     @Override
-    protected void onDestroy() {
-        if (mPresenter != null) {
-            mPresenter.detachView();
-        }
-        super.onDestroy();
-    }
-
-    @Override
     protected void onViewCreated() {
-        super.onViewCreated();
         if (mPresenter != null) {
             mPresenter.attachView(this);
         }
+    }
+
+    @Override
+    protected void onDestroy() {
+        if (mPresenter != null) {
+            mPresenter.detachView();
+            mPresenter = null;
+        }
+        super.onDestroy();
     }
 
     @Override
@@ -98,16 +96,6 @@ public abstract class BaseActivity<T extends AbstractPresenter> extends Abstract
     }
 
     @Override
-    public void showCollectFail() {
-        CommonUtils.showSnackMessage(this, getString(R.string.collect_fail));
-    }
-
-    @Override
-    public void showCancelCollectFail() {
-        CommonUtils.showSnackMessage(this, getString(R.string.cancel_collect_fail));
-    }
-
-    @Override
     public void showCollectSuccess() {
 
     }
@@ -125,6 +113,16 @@ public abstract class BaseActivity<T extends AbstractPresenter> extends Abstract
     @Override
     public void showLogoutView() {
 
+    }
+
+    @Override
+    public void showToast(String message) {
+        CommonUtils.showMessage(this, message);
+    }
+
+    @Override
+    public void showSnackBar(String message) {
+        CommonUtils.showSnackMessage(this, message);
     }
 
 }
